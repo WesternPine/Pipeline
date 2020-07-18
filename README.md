@@ -13,7 +13,7 @@ Messaging channel API that covers the most popular versions of modable Minecraft
 |---------|-----------|
 | Single interface API | Yes |
 | Custom Implementation Support | Yes |
-| Communication With Various Proxie/Server Types | Yes |
+| Communication With Various Proxies/Server Types | Yes |
 | Requests For Responses | Yes |
 | Multiple Any Object Messages | Yes |
 
@@ -34,9 +34,13 @@ If you are using a build automation tool, click the shield above to get more hel
 
 ### Creating A Custom Implementation
 
-Creating a custom implementation is rather easy, but it will require you to understand how to use messaging channels for the platform you plan to code this on. Because of the lengthy explination, I will not write a tutorial on how to do this. If you would like an example, feel free to check out any of the [live package classes containing the code for each supported base-platform.](https://github.com/WesternPine/Pipeline/blob/master/src/main/java/dev/westernpine/pipeline/examples/UsageExample.md) The pre-written code should provide some great examples on how you can create your own implementation.
+Creating a custom implementation is rather easy, but it will require you to understand how to use messaging channels for the platform you plan to code this on. Because of the lengthy explination, I will not write a tutorial on how to do this. If you would like an example, feel free to check out any of the [live package classes containing the code for each supported base-platform.](https://github.com/WesternPine/Pipeline/tree/master/src/main/java/dev/westernpine/pipeline/live) The pre-written code should provide some great examples on how you can create your own implementation.
 
 If your platform isn't supported, and you can't code your own implementation, or would like to see support for your platform, please see below on how to contact me.
+
+## Working With Pipeline
+
+Working with pipeline is coded to be extremely easy and versitile. You can check out the [Bukkit example snippits with explinations here](https://github.com/WesternPine/Pipeline/blob/master/src/main/java/dev/westernpine/pipeline/examples/UsageExample.md) to get an idea about how to use Pipeline in your workflow.
 
 ## What Is A Request?
 
