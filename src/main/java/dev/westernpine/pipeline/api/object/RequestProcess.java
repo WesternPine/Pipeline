@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import lombok.NonNull;
+
 public class RequestProcess {
 	
 	private Thread safeThread;
@@ -15,7 +17,7 @@ public class RequestProcess {
 	private Consumer<TimeoutException> timeoutHandler = timeout -> {};
 	private Consumer<Exception> exceptionHandler = exception -> {};
 	
-	public RequestProcess (long timeoutTime, Future<Message> response) {
+	public RequestProcess (long timeoutTime, @NonNull Future<Message> response) {
 		this.safeThread = Thread.currentThread();
 		this.task = new Thread(() -> {
 			try {
@@ -41,17 +43,17 @@ public class RequestProcess {
 		});
 	}
 	
-	public RequestProcess onCompletion(Consumer<Message> responseHandler) {
+	public RequestProcess onCompletion(@NonNull Consumer<Message> responseHandler) {
 		this.responseHandler = responseHandler;
 		return this;
 	}
 	
-	public RequestProcess onTimeout(Consumer<TimeoutException> timeoutHandler) {
+	public RequestProcess onTimeout(@NonNull Consumer<TimeoutException> timeoutHandler) {
 		this.timeoutHandler = timeoutHandler;
 		return this;
 	}
 	
-	public RequestProcess onException(Consumer<Exception> exceptionHandler) {
+	public RequestProcess onException(@NonNull Consumer<Exception> exceptionHandler) {
 		this.exceptionHandler = exceptionHandler;
 		return this;
 	}

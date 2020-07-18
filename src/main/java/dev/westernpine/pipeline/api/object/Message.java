@@ -37,17 +37,17 @@ public class Message {
 		this.carrier = carrier;
 	}
 	
-	public Message(@NonNull UUID carrier, Collection<Object> content) {
+	public Message(@NonNull UUID carrier, @NonNull Collection<Object> content) {
 		this.carrier = carrier;
 		this.content.addAll(content);
 	}
 	
-	public Message inject(Object object) {
+	public Message inject(@NonNull Object object) {
 		content.addFirst(object);
 		return this;
 	}
 	
-	public Message write(Object object) {
+	public Message write(@NonNull Object object) {
 		content.add(object);
 		return this;
 	}
@@ -61,7 +61,7 @@ public class Message {
     }
 	
 	@SneakyThrows
-    public <T> T read(Class<T> clazz) {
+    public <T> T read(@NonNull Class<T> clazz) {
         Object object = read();
         if (object.getClass().isAssignableFrom(clazz))
             return clazz.cast(object);
