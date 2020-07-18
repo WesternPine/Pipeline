@@ -144,9 +144,9 @@ public class BukkitPipeline extends JavaPlugin implements PipelineHandler {
 			Player player = (Player) getServer().getPlayer(message.getCarrier());
 			if (player != null) {
 				final UUID requestId = UUID.randomUUID();
-				player.sendPluginMessage(this, outgoingRequestChannel, message.inject(requestId).toByteArray());
 				
 				Future<Message> responseListener =  Executors.newSingleThreadExecutor().submit(() -> {
+					player.sendPluginMessage(this, outgoingRequestChannel, message.inject(requestId).toByteArray());
 					while(true && !Thread.interrupted()) {
 						synchronized (responses) {
 							Iterator<Entry<Message, Instant>> it = responses.entrySet().iterator();

@@ -142,9 +142,9 @@ public class SpongePipeline implements PipelineHandler {
 			Player player = (Player) game.getServer().getOnlinePlayers().toArray()[0];
 			if (player != null) {
 				final UUID requestId = UUID.randomUUID();
-				outgoingRequestChannel.sendTo(player, buffer -> buffer.writeBytes(message.inject(requestId).toByteArray()));
 				
 				Future<Message> responseListener =  Executors.newSingleThreadExecutor().submit(() -> {
+					outgoingRequestChannel.sendTo(player, buffer -> buffer.writeBytes(message.inject(requestId).toByteArray()));
 					while(true && !Thread.interrupted()) {
 						synchronized (responses) {
 							Iterator<Entry<Message, Instant>> it = responses.entrySet().iterator();

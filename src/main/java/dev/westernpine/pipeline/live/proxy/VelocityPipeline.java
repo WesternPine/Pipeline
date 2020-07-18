@@ -157,9 +157,9 @@ public class VelocityPipeline implements PipelineHandler {
 			Optional<ServerConnection> server = player.get().getCurrentServer();
 			if (server.isPresent()) {
 				final UUID requestId = UUID.randomUUID();
-				server.get().sendPluginMessage(outgoingRequestChannel, message.inject(requestId).toByteArray());
 				
 				Future<Message> responseListener =  Executors.newSingleThreadExecutor().submit(() -> {
+					server.get().sendPluginMessage(outgoingRequestChannel, message.inject(requestId).toByteArray());
 					while(true && !Thread.interrupted()) {
 						synchronized (responses) {
 							Iterator<Entry<Message, Instant>> it = responses.entrySet().iterator();

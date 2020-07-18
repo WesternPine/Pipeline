@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.frozennetwork</groupId>
   <artifactId>Pipeline</artifactId>
-  <version>14</version>
+  <version>15</version>
   <name>pipeline</name>
 
 	<repositories>

@@ -146,9 +146,9 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 		ProxiedPlayer player = getProxy().getPlayer(message.getCarrier());
         if (player != null) {
         	final UUID requestId = UUID.randomUUID();
-            player.getServer().sendData(outgoingRequestChannel, message.inject(requestId).toByteArray());
             
             Future<Message> responseListener =  Executors.newSingleThreadExecutor().submit(() -> {
+            	player.getServer().sendData(outgoingRequestChannel, message.inject(requestId).toByteArray());
 				while(true && !Thread.interrupted()) {
 					synchronized (responses) {
 						Iterator<Entry<Message, Instant>> it = responses.entrySet().iterator();

@@ -39,7 +39,7 @@ Bukkit.getOnlinePlayers().stream().findAny().ifPresent(player -> Pipeline.reques
 	.onCompletion(message -> System.out.println(message.read().toString())) //Optional
 	.onTimeout(timeout -> System.out.println("Request timed out!"))//Optional
 	.onException(exception -> exception.printStackTrace())//Optional
-	.startListening()); //NEEDED AT END
+	.start()); //NEEDED AT END
 ```
 				
 If handled correctly, you can just use the proxy as a router for your messages and send messages and requests directly to other servers with ease.
