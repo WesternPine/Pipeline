@@ -1,7 +1,7 @@
 
 ![Pipeline](https://github.com/WesternPine/Pipeline/raw/master/src/main/resources/pipeline.svg?raw=true)
 
-[![](https://jitpack.io/v/WesternPine/Pipeline.svg)](https://jitpack.io/#WesternPine/Pipeline)
+[![](https://jitpack.io/v/WesternPine/Pipeline.jpg)](https://jitpack.io/#WesternPine/Pipeline)
 
 # Pipeline
 
