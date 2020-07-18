@@ -1,5 +1,5 @@
 
-![Pipeline](https://github.com/WesternPine/Pipeline/raw/master/src/main/resources/pipeline.svg?raw=true)
+![Pipeline](https://github.com/WesternPine/Pipeline/raw/master/src/main/resources/pipeline.jpg?raw=true)
 
 [![](https://jitpack.io/v/WesternPine/Pipeline.jpg)](https://jitpack.io/#WesternPine/Pipeline)
 
