@@ -1,0 +1,5 @@
+name: ${project.artifactId}
+main: dev.westernpine.pipeline.live.server.BukkitPipeline
+version: ${project.version}
+api-version: 1.15
+authors: [WesternPine]
