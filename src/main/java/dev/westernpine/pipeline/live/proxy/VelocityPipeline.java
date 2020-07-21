@@ -31,7 +31,7 @@ import dev.westernpine.pipeline.api.object.RequestProcess;
 import dev.westernpine.pipeline.exceptions.NoRoutablePathException;
 import lombok.SneakyThrows;
 
-@Plugin(id = "pipeline", name = "Pipeline", version = "16", authors = { "WesternPine" })
+@Plugin(id = "pipeline", name = "Pipeline", version = "21", authors = { "WesternPine" })
 public class VelocityPipeline implements PipelineHandler {
 
 	private ProxyServer server;
@@ -169,12 +169,12 @@ public class VelocityPipeline implements PipelineHandler {
 								Message msg = entry.getKey();
 								Message response = msg.clone();
 								
-								if(!message.hasContent()) {
+								if(!response.hasContent()) {
 									it.remove();
 									continue;
 								}
 								
-								Object first = message.read();
+								Object first = response.read();
 								if(!(first instanceof UUID)) {
 									it.remove();
 									continue;

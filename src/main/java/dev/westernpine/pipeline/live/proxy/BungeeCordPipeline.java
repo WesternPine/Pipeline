@@ -158,12 +158,12 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 							Message msg = entry.getKey();
 							Message response = msg.clone();
 							
-							if(!message.hasContent()) {
+							if(!response.hasContent()) {
 								it.remove();
 								continue;
 							}
 							
-							Object first = message.read();
+							Object first = response.read();
 							if(!(first instanceof UUID)) {
 								it.remove();
 								continue;
