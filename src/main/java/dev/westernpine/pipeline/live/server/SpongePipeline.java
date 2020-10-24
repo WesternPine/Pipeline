@@ -30,7 +30,7 @@ import dev.westernpine.pipeline.api.object.RequestProcess;
 import dev.westernpine.pipeline.exceptions.NoRoutablePathException;
 import lombok.SneakyThrows;
 
-@Plugin(id = "pipeline", name = "Pipeline", version = "21", authors = { "WesternPine" })
+@Plugin(id = "pipeline", name = "Pipeline", version = "23", authors = { "WesternPine" })
 public class SpongePipeline implements PipelineHandler {
 	
     @Inject

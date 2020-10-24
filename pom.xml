@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.frozennetwork</groupId>
 	<artifactId>Pipeline</artifactId>
-	<version>22</version>
+	<version>23</version>
 	<name>pipeline</name>
 
 	<repositories>
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.14</version>
+			<version>1.18.16</version>
 		</dependency>
 
 		<dependency>
@@ -81,39 +81,6 @@
 		</resources>
 
 		<plugins>
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.3</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<includes>
-						<include>${basedir}/src/main/java/dev/westernpine/pipeline/live/proxy/VelocityPipeline.java</include>
-						<include>${basedir}/src/main/java/dev/westernpine/pipeline/live/server/SpongePipeline.java</include>
-					</includes>
-					<replacements>
-						<replacement>
-							<token>%ID%</token>
-							<value>${project.name}</value>
-						</replacement>
-						<replacement>
-							<token>%NAME%</token>
-							<value>${project.artifactId}</value>
-						</replacement>
-						<replacement>
-							<token>%VERSION%</token>
-							<value>${project.version}</value>
-						</replacement>
-					</replacements>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
