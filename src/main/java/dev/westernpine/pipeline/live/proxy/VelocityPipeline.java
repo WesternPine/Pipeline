@@ -31,7 +31,7 @@ import dev.westernpine.pipeline.api.object.RequestProcess;
 import dev.westernpine.pipeline.exceptions.NoRoutablePathException;
 import lombok.SneakyThrows;
 
-@Plugin(id = "pipeline", name = "Pipeline", version = "23", authors = { "WesternPine" })
+@Plugin(id = "pipeline", name = "Pipeline", version = "24", authors = { "WesternPine" })
 public class VelocityPipeline implements PipelineHandler {
 
 	private ProxyServer server;

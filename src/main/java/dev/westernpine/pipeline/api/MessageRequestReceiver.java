@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import dev.westernpine.pipeline.api.object.Message;
 
+@FunctionalInterface
 public interface MessageRequestReceiver {
 	
 	/**

@@ -2,6 +2,7 @@ package dev.westernpine.pipeline.api;
 
 import dev.westernpine.pipeline.api.object.Message;
 
+@FunctionalInterface
 public interface MessageReceiver {
 	
 	/**
