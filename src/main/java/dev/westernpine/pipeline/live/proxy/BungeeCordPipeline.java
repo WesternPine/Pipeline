@@ -122,11 +122,21 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 	public void registerReceiver(MessageReceiver receiver) {
 		messageReceivers.add(receiver);
 	}
+	
+	@Override
+	public void clearRegisteredReceivers() {
+		messageReceivers.clear();
+	}
 
 	@Override
 	public void registerRequestReceiver(MessageRequestReceiver receiver) {
 		messageRequestReceivers.add(receiver);
 		
+	}
+
+	@Override
+	public void clearRegisteredRequestReceivers() {
+		messageRequestReceivers.clear();
 	}
 	
 	@SneakyThrows

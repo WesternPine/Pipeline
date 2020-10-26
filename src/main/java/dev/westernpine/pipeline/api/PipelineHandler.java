@@ -14,6 +14,11 @@ public interface PipelineHandler {
 	 * @param receiver The receiver to handle incoming messages.
 	 */
 	public void registerReceiver(@NonNull MessageReceiver receiver);
+	
+	/**
+	 * Clears the registered receivers.
+	 */
+	public void clearRegisteredReceivers();
 
 	/**
 	 * Registers a new request receiver for requests.
@@ -21,6 +26,11 @@ public interface PipelineHandler {
 	 * @param receiver The receiver to handle incoming requests than need responses.
 	 */
 	public void registerRequestReceiver(@NonNull MessageRequestReceiver receiver);
+	
+	/**
+	 * Clears the registered request receivers.
+	 */
+	public void clearRegisteredRequestReceivers();
 	
 	/**
 	 * Sends a general message.
