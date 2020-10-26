@@ -55,6 +55,18 @@ public class Pipeline {
 			throw new PipelineNotInitializedException();
 		handler.registerReceiver(receiver);
 	}
+	
+	/**
+	 * Clears the registered receivers.
+	 * 
+	 * @throws PipelineNotInitializeException if the pipeline has not been initialized.
+	 */
+	@SneakyThrows
+	public static void clearRegisteredReceivers() {
+		if(handler == null)
+			throw new PipelineNotInitializedException();
+		handler.clearRegisteredReceivers();
+	}
 
 	/**
 	 * Registers a new request receiver for requests.
@@ -68,6 +80,18 @@ public class Pipeline {
 		if(handler == null)
 			throw new PipelineNotInitializedException();
 		handler.registerRequestReceiver(receiver);
+	}
+	
+	/**
+	 * Clears the registered request receivers.
+	 * 
+	 * @throws PipelineNotInitializeException if the pipeline has not been initialized.
+	 */
+	@SneakyThrows
+	public static void clearRegisteredRequestReceivers() {
+		if(handler == null)
+			throw new PipelineNotInitializedException();
+		handler.clearRegisteredReceivers();
 	}
 	
 	/**

@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -27,6 +28,8 @@ public class BukkitPipeline extends JavaPlugin implements PipelineHandler {
 	
 	private BukkitPipeline instance;
 	
+	private ExecutorService service;
+	
 	private String outgoingChannel = Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName;
 	private String outgoingRequestChannel = Pipeline.requestPrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName;
 	private String outgoingResponseChannel = Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName;
@@ -37,15 +40,13 @@ public class BukkitPipeline extends JavaPlugin implements PipelineHandler {
 	
 	private ConcurrentHashMap<Message, Instant> responses = new ConcurrentHashMap<>();
 	
-	@Override
-	public void onLoad() {
+	public BukkitPipeline() {
 		instance = this;
 		Pipeline.setHandler(this);
 	}
 	
-	@Override
-	public void onEnable() {
-        getServer().getMessenger().registerOutgoingPluginChannel(this, outgoingChannel);
+	public void start() {
+		getServer().getMessenger().registerOutgoingPluginChannel(this, outgoingChannel);
         getServer().getMessenger().registerIncomingPluginChannel(this, Pipeline.namespace + Pipeline.splitter + Pipeline.serverName, new MessageReceivedListener());
         
         getServer().getMessenger().registerOutgoingPluginChannel(this, outgoingRequestChannel);
@@ -55,6 +56,27 @@ public class BukkitPipeline extends JavaPlugin implements PipelineHandler {
         getServer().getMessenger().registerIncomingPluginChannel(this, Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.serverName, new ResponseReceivedListener());
         
         startCleaner();
+	}
+	
+	public void stop() {
+		clearRegisteredReceivers();
+		clearRegisteredRequestReceivers();
+		service.shutdownNow();
+	}
+	
+	@Override
+	public void onLoad() {
+		
+	}
+	
+	@Override
+	public void onEnable() {
+        start();
+	}
+	
+	@Override
+	public void onDisable() {
+		stop();
 	}
 	
 	class MessageReceivedListener implements PluginMessageListener {
@@ -89,7 +111,7 @@ public class BukkitPipeline extends JavaPlugin implements PipelineHandler {
 	}
 	
 	private void startCleaner() {
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
+		(service = Executors.newSingleThreadExecutor()).submit(new Runnable() {
 			@Override
 			public void run() {
 				while(true) {

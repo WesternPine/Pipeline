@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -29,6 +30,8 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 	
 	@Getter
 	private BungeeCordPipeline instance;
+	
+	private ExecutorService service;
 
 	private String outgoingChannel = Pipeline.namespace + Pipeline.splitter + Pipeline.serverName;
 	private String incomingChannel = Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName;
@@ -45,14 +48,12 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 	
 	private ConcurrentHashMap<Message, Instant> responses = new ConcurrentHashMap<>();
 	
-	@Override
-	public void onLoad() {
+	public BungeeCordPipeline() {
 		instance = this;
 		Pipeline.setHandler(this);
 	}
 	
-	@Override
-	public void onEnable() {
+	public void start() {
 		getProxy().registerChannel(outgoingChannel);
 		getProxy().registerChannel(incomingChannel);
 
@@ -65,6 +66,22 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
 		getProxy().getPluginManager().registerListener(this, this);
 		
 		startCleaner();
+	}
+	
+	public void stop() {
+		clearRegisteredReceivers();
+		clearRegisteredRequestReceivers();
+		service.shutdownNow();
+	}
+	
+	@Override
+	public void onEnable() {
+		start();
+	}
+	
+	@Override
+	public void onDisable() {
+		stop();
 	}
 	
 	@EventHandler
@@ -93,7 +110,7 @@ public class BungeeCordPipeline extends Plugin implements PipelineHandler, Liste
     }
 	
 	private void startCleaner() {
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
+		(service = Executors.newSingleThreadExecutor()).submit(new Runnable() {
 			@Override
 			public void run() {
 				while(true) {

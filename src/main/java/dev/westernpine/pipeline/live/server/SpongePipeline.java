@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -14,8 +15,9 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Platform;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameConstructionEvent;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.network.ChannelBinding.RawDataChannel;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -30,11 +32,13 @@ import dev.westernpine.pipeline.api.object.RequestProcess;
 import dev.westernpine.pipeline.exceptions.NoRoutablePathException;
 import lombok.SneakyThrows;
 
-@Plugin(id = "pipeline", name = "Pipeline", version = "25", authors = { "WesternPine" })
+@Plugin(id = "pipeline", name = "Pipeline", version = "26", authors = { "WesternPine" })
 public class SpongePipeline implements PipelineHandler {
 	
     @Inject
     private Game game;
+    
+    private ExecutorService service;
     
     private RawDataChannel outgoingChannel;
     private RawDataChannel outgoingRequestChannel;
@@ -46,48 +50,66 @@ public class SpongePipeline implements PipelineHandler {
 	
 	private ConcurrentHashMap<Message, Instant> responses = new ConcurrentHashMap<>();
 	
-	@Listener
-    public void onGameConstruction(GameConstructionEvent event) {
+	public SpongePipeline() {
 		Pipeline.setHandler(this);
 	}
 	
-	 @Listener
-	    public void onGamePreInitialization(GamePreInitializationEvent event) {
-			this.outgoingChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
-			game.getChannelRegistrar().createRawChannel(this, Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
-					(buffer, connection, side) -> {
-						Message message = new Message(buffer.readBytes(buffer.available()));
-						messageReceivers.forEach(receiver -> receiver.onMessageReceived(message.clone()));
-					});
-			
-			this.outgoingRequestChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.requestPrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
-			game.getChannelRegistrar().createRawChannel(this, Pipeline.requestPrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
-					(buffer, connection, side) -> {
-						Message message = new Message(buffer.readBytes(buffer.available()));
-						if(!message.hasContent())
-							return;
-						Object first = message.read();
-						if(!(first instanceof UUID))
-							return;
-			        	UUID requestId = (UUID) first;
-			        	messageRequestReceivers.forEach(receiver -> receiver.onRequestReceived(requestId, message.clone()));
-					});
-			
-			this.outgoingResponseChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
-			game.getChannelRegistrar().createRawChannel(this, Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
-					(buffer, connection, side) -> {
-						synchronized (responses) {
-			        		responses.put(new Message(buffer.readBytes(buffer.available())), Instant.now().plusMillis(Pipeline.responseCacheTime));
-			        	}  
-					});
-	        
-			startCleaner();
-	 }
+	public void start() {
+		this.outgoingChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
+		game.getChannelRegistrar().createRawChannel(this, Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
+				(buffer, connection, side) -> {
+					Message message = new Message(buffer.readBytes(buffer.available()));
+					messageReceivers.forEach(receiver -> receiver.onMessageReceived(message.clone()));
+				});
+		
+		this.outgoingRequestChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.requestPrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
+		game.getChannelRegistrar().createRawChannel(this, Pipeline.requestPrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
+				(buffer, connection, side) -> {
+					Message message = new Message(buffer.readBytes(buffer.available()));
+					if(!message.hasContent())
+						return;
+					Object first = message.read();
+					if(!(first instanceof UUID))
+						return;
+		        	UUID requestId = (UUID) first;
+		        	messageRequestReceivers.forEach(receiver -> receiver.onRequestReceived(requestId, message.clone()));
+				});
+		
+		this.outgoingResponseChannel = game.getChannelRegistrar().createRawChannel(this, Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.proxyName);
+		game.getChannelRegistrar().createRawChannel(this, Pipeline.responsePrefix + Pipeline.namespace + Pipeline.splitter + Pipeline.serverName).addListener(Platform.Type.SERVER,
+				(buffer, connection, side) -> {
+					synchronized (responses) {
+		        		responses.put(new Message(buffer.readBytes(buffer.available())), Instant.now().plusMillis(Pipeline.responseCacheTime));
+		        	}  
+				});
+        
+		startCleaner();
+	}
 	
+	public void stop() {
+		clearRegisteredReceivers();
+		clearRegisteredRequestReceivers();
+		service.shutdownNow();
+	}
 	
+	@Listener
+	public void onGamePreInitialization(GamePreInitializationEvent event) {
+		start();
+	}
+	
+	@Listener
+	public void onGameStopping(GameStoppingEvent event) {
+		stop();
+	}
+	
+	@Listener
+	public void onGameShutdown(GameReloadEvent event) {
+		stop();
+		start();
+	}
 	
 	private void startCleaner() {
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
+		(service = Executors.newSingleThreadExecutor()).submit(new Runnable() {
 			@Override
 			public void run() {
 				while(true) {

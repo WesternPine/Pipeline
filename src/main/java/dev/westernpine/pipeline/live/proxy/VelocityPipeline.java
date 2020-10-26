@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -16,6 +17,8 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent.ForwardResult;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -31,10 +34,12 @@ import dev.westernpine.pipeline.api.object.RequestProcess;
 import dev.westernpine.pipeline.exceptions.NoRoutablePathException;
 import lombok.SneakyThrows;
 
-@Plugin(id = "pipeline", name = "Pipeline", version = "25", authors = { "WesternPine" })
+@Plugin(id = "pipeline", name = "Pipeline", version = "26", authors = { "WesternPine" })
 public class VelocityPipeline implements PipelineHandler {
 
 	private ProxyServer server;
+	
+	private ExecutorService service;
 
 	private MinecraftChannelIdentifier outgoingChannel;
 	private MinecraftChannelIdentifier incomingChannel;
@@ -56,9 +61,8 @@ public class VelocityPipeline implements PipelineHandler {
 		this.server = server;
 		Pipeline.setHandler(this);
 	}
-
-	@Subscribe
-	public void onProxyInitialization(ProxyInitializeEvent event) {
+	
+	private void start() {
 		server.getChannelRegistrar().register(outgoingChannel = MinecraftChannelIdentifier.create(Pipeline.namespace, Pipeline.serverName));
 		server.getChannelRegistrar().register(incomingChannel = MinecraftChannelIdentifier.create(Pipeline.namespace, Pipeline.proxyName));
 
@@ -69,6 +73,28 @@ public class VelocityPipeline implements PipelineHandler {
 		server.getChannelRegistrar().register(incomingResponseChannel = MinecraftChannelIdentifier.create(Pipeline.responsePrefix + Pipeline.namespace, Pipeline.proxyName));
 		
 		startCleaner();
+	}
+	
+	private void stop() {
+		clearRegisteredReceivers();
+		clearRegisteredRequestReceivers();
+		service.shutdownNow();
+	}
+
+	@Subscribe
+	public void onProxyInitialization(ProxyInitializeEvent event) {
+		start();
+	}
+	
+	@Subscribe
+	public void onProxyShutdown(ProxyShutdownEvent event) {
+		stop();
+	}
+	
+	@Subscribe
+	public void onProxyReload(ProxyReloadEvent event) {
+		stop();
+		start();
 	}
 
 	@Subscribe
@@ -100,7 +126,7 @@ public class VelocityPipeline implements PipelineHandler {
 	}
 	
 	private void startCleaner() {
-		Executors.newSingleThreadExecutor().submit(new Runnable() {
+		(service = Executors.newSingleThreadExecutor()).submit(new Runnable() {
 			@Override
 			public void run() {
 				while(true) {
