@@ -1,4 +1,0 @@
-name: ${project.artifactId}
-main: dev.westernpine.pipeline.live.proxy.BungeeCordPipeline
-version: ${project.version}
-authors: [WesternPine]

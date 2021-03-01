@@ -1,4 +1,4 @@
-package dev.westernpine.pipeline.exceptions;
+package dev.westernpine.pipelines.lib;
 
 public class NoRoutablePathException extends Exception {
 	
